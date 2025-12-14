@@ -63,9 +63,26 @@ canvas.addEventListener('touchstart', (e) => {
     jump();
 });
 
-document.getElementById('hostBtn').addEventListener('click', initHost);
-document.getElementById('joinBtn').addEventListener('click', joinGame);
+/* --- Fullscreen Helper --- */
+function enterFullScreen() {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(err => console.log(err));
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+        elem.webkitRequestFullscreen();
+    }
+}
+
+document.getElementById('hostBtn').addEventListener('click', () => {
+    enterFullScreen();
+    initHost();
+});
+document.getElementById('joinBtn').addEventListener('click', () => {
+    enterFullScreen();
+    joinGame();
+});
 startBtn.addEventListener('click', () => {
+    enterFullScreen(); // Ensure it for Host start
     if (isHost) {
         broadcast({ type: 'start' });
         startGame();

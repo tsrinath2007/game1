@@ -75,9 +75,15 @@ if (submitNameBtn) submitNameBtn.addEventListener('click', () => {
     }
 });
 
-if (localBtn) localBtn.addEventListener('click', startLocalGame);
-if (hostBtn) hostBtn.addEventListener('click', startHosting);
-if (joinBtn) joinBtn.addEventListener('click', joinGame);
+function enterFullScreen() {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) elem.requestFullscreen().catch(e => console.log(e));
+    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+}
+
+if (localBtn) localBtn.addEventListener('click', () => { enterFullScreen(); startLocalGame(); });
+if (hostBtn) hostBtn.addEventListener('click', () => { enterFullScreen(); startHosting(); });
+if (joinBtn) joinBtn.addEventListener('click', () => { enterFullScreen(); joinGame(); });
 if (backBtn) backBtn.addEventListener('click', resetMenu);
 if (copyBtn) copyBtn.addEventListener('click', () => {
     roomIdDisplay.select();
