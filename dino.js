@@ -287,12 +287,14 @@ function update() {
 
             if (obs.x + obs.w < 0) {
                 obstacles.splice(i, 1);
-                score += 10;
+                // score += 10; // Removed bonus to be simple like Google
             }
         }
 
         // Score & Sync
-        score++;
+        // Slow down score: Increment every 4 frames (approx 15 pts/sec) instead of 60
+        if (frame % 4 === 0) score++;
+
         if (frame % 10 === 0) sendUpdate();
         drawHUD();
 
