@@ -606,6 +606,26 @@ handleHostData = function (data, peerId) {
 const originalHandleDeath = handleDeath;
 handleDeath = function () {
     originalHandleDeath();
+
+    // SAVE SCORE HISTORY
+    // Use a timestamp
+    const now = new Date();
+    const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString(); // e.g., 14/12/2025 9:30 PM
+
+    const historyItem = {
+        name: myName,
+        score: score,
+        date: dateStr,
+        game: 'Dino Race'
+    };
+
+    // Get existing
+    let history = JSON.parse(localStorage.getItem('srinath_game_history') || '[]');
+    history.push(historyItem);
+    // Limit to last 50 entries
+    if (history.length > 50) history = history.slice(history.length - 50);
+    localStorage.setItem('srinath_game_history', JSON.stringify(history));
+
     // Reset button
     if (isHost) {
         requestRematchBtn.innerText = "Play Again (Host)";
