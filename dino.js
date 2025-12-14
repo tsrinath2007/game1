@@ -377,13 +377,29 @@ function resetGame() {
 
 /* --- Multiplayer Logic --- */
 
-function initPeer() {
+/* --- Multiplayer Logic --- */
+const APP_PREFIX = "srinath-dino-";
+
+function initPeer(customId = null) {
     try {
         if (peer) peer.destroy();
-        peer = new Peer({ debug: 1 });
+        // If Host, use custom ID. If Client (joining), auto-id is fine for their own peer, 
+        // they just need to CONNECT to the host's ID.
+        if (customId) {
+            peer = new Peer(APP_PREFIX + customId, { debug: 1 });
+        } else {
+            peer = new Peer(null, { debug: 1 }); // Client gets auto ID
+        }
     } catch (e) { alert(e); }
 
-    peer.on('error', err => alert("Network Error: " + err.type));
+    peer.on('error', err => {
+        if (err.type === 'unavailable-id') {
+            alert("Room Code taken. Retrying...");
+            initHost(); // Retry generation
+        } else {
+            alert("Network Error: " + err.type);
+        }
+    });
 
     return new Promise(resolve => {
         peer.on('open', id => {
@@ -397,11 +413,16 @@ async function initHost() {
     mainMenuBtns.classList.add('hidden');
     roomControls.classList.remove('hidden');
     waitingMsg.classList.add('hidden');
-    startBtn.classList.remove('hidden'); // Host can start
+    startBtn.classList.remove('hidden');
 
-    await initPeer();
+    // Generate 4-digit code
+    const roomCode = Math.floor(1000 + Math.random() * 9000);
+
+    await initPeer(roomCode);
     isHost = true;
-    roomIdDisplay.value = myId;
+
+    // Show ONLY the code, not the full ID
+    roomIdDisplay.value = roomCode;
 
     // Add myself
     players[myId] = { name: myName, color: myColor, score: 0, alive: true };
@@ -411,10 +432,7 @@ async function initHost() {
     peer.on('connection', conn => {
         connections.push(conn);
         conn.on('data', data => handleHostData(data, conn.peer));
-        conn.on('open', () => {
-            // Request info? 
-            // Actually wait for them to send 'join'
-        });
+        conn.on('open', () => { });
         conn.on('close', () => {
             delete players[conn.peer];
             updatePlayerList();
@@ -424,22 +442,22 @@ async function initHost() {
 }
 
 async function joinGame() {
-    const id = document.getElementById('joinInput').value.trim();
-    if (!id) return alert("Enter ID");
+    const code = document.getElementById('joinInput').value.trim();
+    if (!code) return alert("Enter Room Code");
 
     mainMenuBtns.classList.add('hidden');
     roomControls.classList.remove('hidden');
-    startBtn.classList.add('hidden'); // Joiner waits
+    startBtn.classList.add('hidden');
     waitingMsg.classList.remove('hidden');
-    waitingMsg.innerText = "Connecting...";
+    waitingMsg.innerText = "Connecting to Room " + code + "...";
 
-    await initPeer();
+    await initPeer(); // Client gets random ID
 
-    hostConn = peer.connect(id);
+    // Connect to PREFIX + Code
+    hostConn = peer.connect(APP_PREFIX + code);
 
     hostConn.on('open', () => {
         waitingMsg.innerText = "Waiting for Request...";
-        // Send my info
         hostConn.send({
             type: 'join',
             name: myName,

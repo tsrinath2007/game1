@@ -305,13 +305,18 @@ function logVisitor(name) {
 
 /* --- PeerJS Logic --- */
 
-function initPeer() {
+/* --- PeerJS Logic --- */
+const APP_PREFIX = "srinath-ox-";
+
+function initPeer(customId = null) {
     try {
-        // Force a new peer connection. Sometimes artifacts remain.
         if (peer) peer.destroy();
-        peer = new Peer({
-            debug: 2
-        });
+        // If Host, use custom ID. Clients use auto-ID.
+        if (customId) {
+            peer = new Peer(APP_PREFIX + customId, { debug: 2 });
+        } else {
+            peer = new Peer(null, { debug: 2 });
+        }
     } catch (e) {
         alert("PeerJS error: " + e);
         return;
@@ -320,15 +325,36 @@ function initPeer() {
     // Safety Timeout
     const initTimeout = setTimeout(() => {
         if (lobbyMessage.innerText.includes("Generating")) {
-            alert("Connection to matchmaking server timed out. Please check your internet or try refreshing.");
+            alert("Connection to matchmaking server timed out. Please check your internet or retry.");
             resetMenu();
         }
     }, 15000);
 
+    peer.on('error', (err) => {
+        clearTimeout(initTimeout);
+        if (err.type === 'unavailable-id') {
+            alert("Room Code taken. Retrying...");
+            startHosting(); // Retry
+        } else {
+            console.error(err);
+            lobbyMessage.innerText = "Error: " + err.type;
+            alert("Network Error: " + err.type);
+            resetMenu();
+        }
+    });
+
     peer.on('open', (id) => {
         clearTimeout(initTimeout);
+        // If we provided a customId (I am host), 'id' will be prefix+customId
+
         if (menuOptions.classList.contains('hidden')) { // Ensure we are still in host mode
-            roomIdDisplay.value = id;
+            // We want to display ONLY the digital code, stripping the prefix
+            let displayId = id;
+            if (id.startsWith(APP_PREFIX)) {
+                displayId = id.replace(APP_PREFIX, '');
+            }
+
+            roomIdDisplay.value = displayId;
             lobbyMessage.innerText = `Waiting for player...`;
             copyContainer.classList.remove('hidden');
         }
@@ -337,14 +363,6 @@ function initPeer() {
     peer.on('connection', (connection) => {
         handleConnection(connection, true);
     });
-
-    peer.on('error', (err) => {
-        clearTimeout(initTimeout);
-        console.error(err);
-        lobbyMessage.innerText = "Error: " + err.type;
-        alert("Network Error: " + err.type);
-        resetMenu();
-    });
 }
 
 function startHosting() {
@@ -352,14 +370,18 @@ function startHosting() {
     menuOptions.classList.add('hidden');
     lobbyStatus.classList.remove('hidden');
     lobbyMessage.innerText = "Generating Room ID...";
-    initPeer();
+
+    // Generate 4-digit Code
+    const code = Math.floor(1000 + Math.random() * 9000);
+    initPeer(code);
+
     mySide = 'x';
     myTurn = true;
 }
 
 function joinGame() {
-    const destId = joinInput.value.trim();
-    if (!destId) return alert("Please enter a Game ID");
+    const destCode = joinInput.value.trim();
+    if (!destCode) return alert("Please enter a Game ID");
 
     menuOptions.classList.remove('show');
     menuOptions.classList.add('hidden');
@@ -369,8 +391,9 @@ function joinGame() {
     try { peer = new Peer(); } catch (e) { alert("PeerJS error: " + e); resetMenu(); return; }
 
     peer.on('open', () => {
-        conn = peer.connect(destId, {
-            metadata: { name: myName } // Send my name to host
+        // Connect to PREFIX + Code
+        conn = peer.connect(APP_PREFIX + destCode, {
+            metadata: { name: myName }
         });
         handleConnection(conn, false);
     });
