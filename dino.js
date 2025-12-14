@@ -21,7 +21,7 @@ let myId = null; // Peer ID
 // Game State
 let gameActive = false;
 let score = 0;
-let gameSpeed = 5;
+let gameSpeed = 4; // Reduced from 5
 let gravity = 0.6;
 let obstacles = [];
 let frame = 0;
@@ -262,12 +262,14 @@ function update() {
         // Obstacles spawning
         if (frame % 100 === 0) {
             spawnObstacle();
-            gameSpeed += 0.05;
+            gameSpeed += 0.005; // Acceleration reduced (was 0.05)
         }
 
         for (let i = obstacles.length - 1; i >= 0; i--) {
             let obs = obstacles[i];
             obs.x -= gameSpeed;
+            // ...
+
 
             // Draw based on type
             if (obs.type === 'crow') drawCrow(obs);
@@ -382,7 +384,7 @@ function startGame() {
 function resetGame() {
     score = 0;
     obstacles = [];
-    gameSpeed = 5;
+    gameSpeed = 4; // Reduced from 5
     frame = 0;
     dino.y = 300;
     dino.dy = 0;
