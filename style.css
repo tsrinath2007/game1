@@ -305,12 +305,13 @@ body {
 }
 
 /* Only show on Portrait Mobile for Game Pages */
+/* Only show on Portrait Mobile for Game Pages */
 @media (max-width: 900px) and (orientation: portrait) {
-    .force-rotate .rotate-overlay {
+    body.require-landscape .rotate-overlay {
         display: flex;
     }
 
-    .force-rotate .game-container {
+    body.require-landscape .game-container {
         display: none;
         /* Hide game to prevent clicking */
     }
