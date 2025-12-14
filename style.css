@@ -112,6 +112,45 @@ body {
     }
 }
 
+/* Hub-specific Mobile Fix */
+@media (max-width: 768px) {
+    body {
+        /* Fix overflow horizontal */
+        width: 100vw;
+        overflow-x: hidden;
+    }
+
+    .game-selection {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .game-card {
+        width: 100% !important;
+        max-width: 320px;
+        margin-bottom: 1.5rem;
+    }
+
+    /* General container fix */
+    .game-container {
+        width: 90%;
+        margin: 1rem auto;
+        padding: 1.5rem 1rem;
+        /* Ensure it doesn't overflow screen */
+        max-width: 100vw;
+        box-sizing: border-box;
+    }
+
+    .welcome-title {
+        font-size: 2.5rem !important;
+        /* Smaller title */
+        word-wrap: break-word;
+        /* Prevent long word overflow */
+    }
+}
+
+
 .game-header h1 {
     font-size: 2.5rem;
     font-weight: 700;
