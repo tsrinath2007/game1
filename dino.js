@@ -593,14 +593,44 @@ requestRematchBtn.addEventListener('click', () => {
 const originalHandleHostData = handleHostData;
 handleHostData = function (data, peerId) {
     originalHandleHostData(data, peerId);
+
     if (data.type === 'rematch_req') {
         const pName = data.name;
-        // Notify Host UI
-        // We can reuse the button text
         requestRematchBtn.innerText = `Rematch requested by ${pName} (Click to Start)`;
-        requestRematchBtn.style.background = '#e11d48'; // Pulse color?
+        requestRematchBtn.style.background = '#e11d48';
+    }
+
+    // SYNC SCORES: When a player updates that they are dead
+    if (data.type === 'update' && !data.alive) {
+        // Check if ALL are dead
+        const allDead = Object.values(players).every(p => !p.alive);
+        if (allDead) {
+            saveAllScoresToHistory();
+        }
     }
 };
+
+function saveAllScoresToHistory() {
+    let history = JSON.parse(localStorage.getItem('srinath_game_history') || '[]');
+    const now = new Date();
+    const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+
+    Object.values(players).forEach(p => {
+        // Avoid duplicate exact entries? Just push.
+        if (p.score > 0) {
+            history.push({
+                name: p.name,
+                score: p.score,
+                date: dateStr,
+                game: 'Dino Race'
+            });
+        }
+    });
+
+    history.sort((a, b) => b.score - a.score);
+    if (history.length > 100) history = history.slice(0, 100);
+    localStorage.setItem('srinath_game_history', JSON.stringify(history));
+}
 
 // Hook into Game Over to reset button state
 const originalHandleDeath = handleDeath;
