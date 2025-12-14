@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Race Royale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        .dino-container {
+            position: relative;
+            width: 800px;
+            /* Fixed width for consistency */
+            height: 400px;
+            background: #f7f9fc;
+            /* Light mode for dino originally, but we do dark mode premium */
+            background: #0f172a;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: monospace;
+            z-index: 10;
+        }
+
+        .lobby-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .leaderboard {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.8rem;
+            min-width: 150px;
+        }
+
+        .lb-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .lb-alive {
+            color: #4ade80;
+        }
+
+        .lb-dead {
+            color: #ef4444;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            gap: 10px;
+            margin: 1rem 0;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="position: absolute; top: 10px; left: 10px;">
+        <a href="hub.html" class="text-btn" style="text-decoration: none; font-size: 0.9rem;">← Back to Hub</a>
+    </div>
+
+    <div class="game-container" style="max-width: 900px; width: 95%;">
+        <header class="game-header">
+            <h1>Dino Race</h1>
+            <div class="status" id="statusMsg">Waiting to start...</div>
+        </header>
+
+        <div class="dino-container" id="gameArea">
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+            <div class="leaderboard" id="leaderboard">
+                <!-- Players -->
+            </div>
+
+            <!-- Lobby Overlay -->
+            <div id="lobbyScreen" class="lobby-overlay">
+                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Lobby</h2>
+
+                <div class="color-picker-wrapper">
+                    <span>Pick Your Color:</span>
+                    <input type="color" id="dinoColor" value="#4ade80">
+                </div>
+
+                <div id="mainMenuBtns">
+                    <button id="hostBtn" class="base-btn primary-btn">Host Room</button>
+                    <div style="margin: 1rem 0; color: #64748b;">OR</div>
+                    <div class="join-container">
+                        <input type="text" id="joinInput" placeholder="Room ID" class="join-input">
+                        <button id="joinBtn" class="base-btn accent-btn">Join</button>
+                    </div>
+                </div>
+
+                <div id="roomControls" class="hidden" style="text-align: center;">
+                    <p style="color: #94a3b8; margin-bottom: 0.5rem;">Room ID:</p>
+                    <input type="text" id="roomIdDisplay" readonly class="join-input" style="cursor: pointer;">
+                    <div id="playerList" style="margin: 1rem 0; max-height: 100px; overflow-y: auto;">
+                        <!-- Connected Players -->
+                    </div>
+                    <button id="startBtn" class="base-btn primary-btn hidden">Start Race</button>
+                    <p id="waitingMsg" class="hidden" style="color:#f472b6;">Waiting for host to start...</p>
+                </div>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div id="gameOverScreen" class="lobby-overlay hidden">
+                <h2 style="font-size: 2.5rem; color: #f43f5e;">GAME OVER</h2>
+                <p id="finalScore" style="font-size: 1.5rem; margin: 1rem 0;">Score: 0</p>
+                <div id="winnerDisplay" style="margin-bottom: 2rem; color: #fbbf24; font-weight: bold;"></div>
+                <button id="spectateBtn" class="base-btn secondary-btn">Spectate</button>
+                <button id="backToLobbyBtn" class="base-btn text-btn" style="margin-top: 1rem;">Back to Lobby</button>
+            </div>
+        </div>
+
+        <p style="margin-top: 1rem; color: #64748b; font-size: 0.8rem;">
+            Controls: [Space] or [Tap] to Jump. Avoid obstacles. Survive!
+        </p>
+    </div>
+
+    <script src="dino.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Log | Srinath's Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .table-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 2rem auto;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #e2e8f0;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: #64748b;
+            padding: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="game-container" style="max-width: 800px;">
+        <header class="game-header">
+            <h1>Visitor Log</h1>
+            <div class="status">People who have played with you</div>
+        </header>
+
+        <div class="table-container">
+            <table id="logTable">
+                <thead>
+                    <tr>
+                        <th>Opponent Name</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody id="logBody">
+                    <!-- Names go here -->
+                </tbody>
+            </table>
+            <div id="emptyMsg" class="empty-msg hidden">No visitors yet.</div>
+        </div>
+
+        <a href="index.html" class="base-btn secondary-btn" style="display: inline-block; text-decoration: none;">Back
+            to Game</a>
+    </div>
+
+    <script>
+        const log = JSON.parse(localStorage.getItem('visitorLog') || '[]');
+        const tbody = document.getElementById('logBody');
+        const emptyMsg = document.getElementById('emptyMsg');
+
+        if (log.length === 0) {
+            emptyMsg.classList.remove('hidden');
+        } else {
+            // Reverse to show newest first
+            log.reverse().forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 700; color: #fff;">${entry.name}</td>
+                    <td style="color: #94a3b8;">${entry.date}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+
+</html>

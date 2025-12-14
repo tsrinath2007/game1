@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe | Premium Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Welcome Screen / Lobby -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <h1 class="welcome-title">OX Game</h1>
+
+        <!-- Name Entry Section (Hidden by default, used as fallback) -->
+        <div id="nameEntrySection" class="menu-section hidden">
+            <input type="text" id="playerNameInput" placeholder="Enter Your Name" class="join-input"
+                style="width: 250px; text-align: center; margin-bottom: 1rem;">
+            <button id="submitNameBtn" class="base-btn primary-btn">Continue</button>
+            <a href="visitors.html" class="text-btn" style="margin-top: 2rem; display: block;">View Visitor Log</a>
+        </div>
+
+        <div class="menu-options hidden" id="menuOptions">
+            <h2 id="greetingMsg" style="color: #cbd5e1; margin-bottom: 1.5rem; font-weight: 300;"></h2>
+            <button id="localBtn" class="base-btn secondary-btn">Local Game</button>
+            <div class="divider"><span>OR</span></div>
+            <button id="hostBtn" class="base-btn primary-btn">Host Online</button>
+            <div class="join-container">
+                <input type="text" id="joinInput" placeholder="Enter Game ID" class="join-input">
+                <button id="joinBtn" class="base-btn accent-btn">Join</button>
+            </div>
+        </div>
+
+        <div id="lobbyStatus" class="lobby-status hidden">
+            <p id="lobbyMessage">Initializing...</p>
+            <div id="copyContainer" class="hidden">
+                <input type="text" id="roomIdDisplay" readonly>
+                <button id="copyBtn">Copy ID</button>
+            </div>
+            <button id="backBtn" class="base-btn text-btn">Back</button>
+        </div>
+
+        <footer style="position: absolute; bottom: 20px; color: rgba(255,255,255,0.3); font-size: 0.9rem;">
+            Created by Srinath
+        </footer>
+    </div>
+
+    <main class="game-container hidden">
+        <header class="game-header">
+            <h1>OX Game</h1>
+            <div class="status" id="status">Player X's Turn</div>
+        </header>
+
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <button class="reset-btn" id="restartBtn">New Game</button>
+    </main>
+
+    <script src="ox.js"></script>
+    <div style="position: absolute; top: 10px; left: 10px;">
+        <a href="hub.html" class="text-btn" style="text-decoration: none; font-size: 0.9rem;">← Back to Hub</a>
+    </div>
+</body>
+
+</html>
