@@ -92,7 +92,7 @@
 
     <h1 class="welcome-title" style="margin-bottom: 3rem; opacity: 1;">Select Game</h1>
 
-    <div style="position: absolute; top: 20px; left: 20px; z-index: 100;">
+    <div style="position: absolute; top: 20px; left: 20px; z-index: 9999;">
         <button id="adminBtn" style="background:none; border:none; font-size: 1.5rem; cursor: pointer; opacity: 0.7;"
             title="Admin History">🔒</button>
     </div>
@@ -148,77 +148,89 @@
     </div>
 
     <script>
-        const name = localStorage.getItem('srinath_game_name') || 'Guest';
-        document.getElementById('playerNameDisplay').innerText = name;
+        document.addEventListener('DOMContentLoaded', () => {
+            const name = localStorage.getItem('srinath_game_name') || 'Guest';
+            const nameDisplay = document.getElementById('playerNameDisplay');
+            if (nameDisplay) nameDisplay.innerText = name;
 
-        /* --- Admin Logic --- */
-        const adminBtn = document.getElementById('adminBtn');
-        const adminModal = document.getElementById('adminModal');
-        const closeAdminBtn = document.getElementById('closeAdminBtn');
-        const scoreTableBody = document.getElementById('scoreTableBody');
-        const noScoresMsg = document.getElementById('noScoresMsg');
+            /* --- Admin Logic --- */
+            const adminBtn = document.getElementById('adminBtn');
+            const adminModal = document.getElementById('adminModal');
+            const closeAdminBtn = document.getElementById('closeAdminBtn');
+            const scoreTableBody = document.getElementById('scoreTableBody');
+            const noScoresMsg = document.getElementById('noScoresMsg');
+            const adminSearch = document.getElementById('adminSearch');
 
-        const adminSearch = document.getElementById('adminSearch');
+            if (adminSearch) {
+                adminSearch.addEventListener('keyup', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    const rows = scoreTableBody.getElementsByTagName('tr');
 
-        adminSearch.addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
-            const rows = scoreTableBody.getElementsByTagName('tr');
+                    Array.from(rows).forEach(row => {
+                        const nameCell = row.getElementsByTagName('td')[0];
+                        if (nameCell) {
+                            const nameText = nameCell.textContent || nameCell.innerText;
+                            if (nameText.toLowerCase().indexOf(term) > -1) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        }
+                    });
+                });
+            }
 
-            Array.from(rows).forEach(row => {
-                const nameCell = row.getElementsByTagName('td')[0];
-                if (nameCell) {
-                    const nameText = nameCell.textContent || nameCell.innerText;
-                    if (nameText.toLowerCase().indexOf(term) > -1) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
+            if (adminBtn) {
+                adminBtn.addEventListener('click', () => {
+                    // Small delay to ensure click registers
+                    setTimeout(() => {
+                        const pass = prompt("Enter Admin Password:");
+                        if (pass === '2007') {
+                            openAdminPanel();
+                        } else if (pass !== null) {
+                            alert("Access Denied.");
+                        }
+                    }, 10);
+                });
+            } else {
+                console.error("Admin Btn not found");
+            }
+
+            if (closeAdminBtn) {
+                closeAdminBtn.addEventListener('click', () => {
+                    if (adminModal) adminModal.classList.add('hidden');
+                });
+            }
+
+            function openAdminPanel() {
+                if (adminModal) adminModal.classList.remove('hidden');
+                renderHistory();
+            }
+
+            function renderHistory() {
+                const history = JSON.parse(localStorage.getItem('srinath_game_history') || '[]');
+                if (scoreTableBody) scoreTableBody.innerHTML = '';
+
+                if (history.length === 0) {
+                    if (noScoresMsg) noScoresMsg.style.display = 'block';
+                    return;
                 }
-            });
-        });
+                if (noScoresMsg) noScoresMsg.style.display = 'none';
 
-        adminBtn.addEventListener('click', () => {
-            const pass = prompt("Enter Admin Password:");
-            if (pass === '2007') {
-                openAdminPanel();
-            } else if (pass !== null) {
-                alert("Access Denied.");
+                history.sort((a, b) => b.score - a.score);
+
+                history.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+                    tr.innerHTML = `
+                        <td style="padding: 10px; color: ${item.score > 200 ? '#4ade80' : '#cbd5e1'}; font-weight: 500;">${item.name}</td>
+                        <td style="padding: 10px; font-weight: bold; color: #fff;">${item.score}</td>
+                        <td style="padding: 10px; text-align: right; font-size: 0.8rem; color: #94a3b8;">${item.date}</td>
+                    `;
+                    if (scoreTableBody) scoreTableBody.appendChild(tr);
+                });
             }
         });
-
-        closeAdminBtn.addEventListener('click', () => {
-            adminModal.classList.add('hidden');
-        });
-
-        function openAdminPanel() {
-            adminModal.classList.remove('hidden');
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('srinath_game_history') || '[]');
-            scoreTableBody.innerHTML = '';
-
-            if (history.length === 0) {
-                noScoresMsg.style.display = 'block';
-                return;
-            }
-            noScoresMsg.style.display = 'none';
-
-            // Sort by Score Descending
-            history.sort((a, b) => b.score - a.score);
-
-            history.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
-                tr.innerHTML = `
-                    <td style="padding: 10px; color: ${item.score > 200 ? '#4ade80' : '#cbd5e1'}; font-weight: 500;">${item.name}</td>
-                    <td style="padding: 10px; font-weight: bold; color: #fff;">${item.score}</td>
-                    <td style="padding: 10px; text-align: right; font-size: 0.8rem; color: #94a3b8;">${item.date}</td>
-                `;
-                scoreTableBody.appendChild(tr);
-            });
-        }
     </script>
 </body>
 
