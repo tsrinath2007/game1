@@ -152,6 +152,25 @@
         const scoreTableBody = document.getElementById('scoreTableBody');
         const noScoresMsg = document.getElementById('noScoresMsg');
 
+        const adminSearch = document.getElementById('adminSearch');
+
+        adminSearch.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            const rows = scoreTableBody.getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+                const nameCell = row.getElementsByTagName('td')[0];
+                if (nameCell) {
+                    const nameText = nameCell.textContent || nameCell.innerText;
+                    if (nameText.toLowerCase().indexOf(term) > -1) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+            });
+        });
+
         adminBtn.addEventListener('click', () => {
             const pass = prompt("Enter Admin Password:");
             if (pass === '2007') {
