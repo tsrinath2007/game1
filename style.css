@@ -216,9 +216,13 @@ body {
 }
 
 /* Mobile Responsiveness */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
     .game-container {
         padding: 1.5rem;
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+        /* Scrollable if needed */
     }
 
     .game-header h1 {
@@ -227,6 +231,49 @@ body {
 
     .cell {
         font-size: 2rem;
+    }
+
+    /* Scaling for Dino Game */
+    .dino-container {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 2/1;
+        /* Maintain ratio */
+    }
+
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* Rotate Overlay for Game (Dino) */
+.rotate-overlay {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0f172a;
+    z-index: 9999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Only show on Portrait Mobile for Game Pages */
+@media (max-width: 900px) and (orientation: portrait) {
+    .force-rotate .rotate-overlay {
+        display: flex;
+    }
+
+    .force-rotate .game-container {
+        display: none;
+        /* Hide game to prevent clicking */
     }
 }
 

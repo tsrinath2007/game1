@@ -148,6 +148,28 @@
     </div>
 
     <script src="dino.js"></script>
+
+    <!-- Rotate Overlay -->
+    <div class="rotate-overlay">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🔄</div>
+        <h2 style="color: white; margin-bottom: 0.5rem;">Please Rotate Device</h2>
+        <p style="color: #94a3b8;">This game requires landscape mode.</p>
+    </div>
+
+    <script>
+        // Check rotation logic
+        function checkOrientation() {
+            // If we are in game active mode (or lobby on dino page), enforce landscape for phones
+            if (window.innerWidth < 900 && window.innerHeight > window.innerWidth) {
+                document.body.classList.add('force-rotate');
+            } else {
+                document.body.classList.remove('force-rotate');
+            }
+        }
+
+        window.addEventListener('resize', checkOrientation);
+        checkOrientation(); // Initial check
+    </script>
 </body>
 
 </html>
