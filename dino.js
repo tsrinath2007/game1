@@ -440,6 +440,9 @@ async function initHost() {
     await initPeer(roomCode);
     isHost = true;
 
+    // START ROTATION REQUIREMENT
+    document.body.classList.add('require-landscape');
+
     // Show ONLY the code, not the full ID
     roomIdDisplay.value = roomCode;
 
@@ -476,6 +479,9 @@ async function joinGame() {
     hostConn = peer.connect(APP_PREFIX + code);
 
     hostConn.on('open', () => {
+        // START ROTATION REQUIREMENT
+        document.body.classList.add('require-landscape');
+
         waitingMsg.innerText = "Waiting for Request...";
         hostConn.send({
             type: 'join',
@@ -620,6 +626,9 @@ startGame = function () {
 
     // Explicitly restart the game loop since handleDeath killed it
     update();
+
+    // Ensure we are in landscape if we somehow missed it
+    document.body.classList.add('require-landscape');
 
     requestRematchBtn.style.display = 'none';
 };
