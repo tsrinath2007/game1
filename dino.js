@@ -73,7 +73,9 @@ startBtn.addEventListener('click', () => {
 });
 document.getElementById('spectateBtn').addEventListener('click', () => {
     gameOverScreen.classList.add('hidden');
-    // Just watch
+    // Restart loop to show "Lobby/Idle" state while waiting
+    // This allows the user to see the leaderboard updating live
+    if (!gameActive) update();
 });
 document.getElementById('backToLobbyBtn').addEventListener('click', () => location.reload());
 
